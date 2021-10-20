@@ -1,0 +1,33 @@
+This is the part of the crash log that happens when you don't use
+application:ensure_all_loaded/1:
+
+===> Failed to boot cowboy_spike for reason {bad_return,
+                                             {{cowboy_spike_app,start,
+                                               [normal,[]]},
+                                              {'EXIT',
+                                               {noproc,
+                                                {gen_server,call,
+                                                 [ranch_sup,
+                                                  {start_child,
+                                                   {{ranch_listener_sup,http},
+                                                    {ranch_listener_sup,
+                                                     start_link,
+                                                     [http,ranch_tcp,
+                                                      #{connection_type =>
+                                                         supervisor,
+                                                        socket_opts =>
+                                                         [{port,8081}]},
+                                                      cowboy_clear,
+                                                      #{connection_type =>
+                                                         supervisor,
+                                                        env =>
+                                                         #{dispatch =>
+                                                            [{'_',[],
+                                                              [{[],[],
+                                                                hello_handler,
+                                                                []}]}]}}]},
+                                                    permanent,infinity,
+                                                    supervisor,
+                                                    [ranch_listener_sup]}},
+                                                  infinity]}}}}}
+

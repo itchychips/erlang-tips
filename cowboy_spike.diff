@@ -1,0 +1,13 @@
+diff -ur cowboy_spike_broken/src/cowboy_spike_app.erl cowboy_spike/src/cowboy_spike_app.erl
+--- cowboy_spike_broken/src/cowboy_spike_app.erl	2021-10-19 21:15:00.305878800 -0500
++++ cowboy_spike/src/cowboy_spike_app.erl	2021-10-19 21:10:50.811870700 -0500
+@@ -3,8 +3,7 @@
+ -export([start/2, stop/1]).
+ 
+ start(_StartType, _StartArgs) ->
+-    % This, commented, breaks the app.
+-    %application:ensure_all_started(cowboy),
++    application:ensure_all_started(cowboy),
+     Dispatch = cowboy_router:compile([
+         {'_', [{"/", hello_handler, []}]}
+     ]),
