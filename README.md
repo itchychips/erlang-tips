@@ -125,3 +125,74 @@ C:\bin\rebar3.cmd source:
 I think this will suffice until I run headlong into yet another issue with the
 environment, but thankfully erlang is very flexible in how it allows an
 environment to look and work.  +1 for dynamic compilation of modules, I guess!
+
+# Kerl and FreeBSD
+
+g++ crashes when trying to compile any modern erlang on my system.  Instead of doing the responsible thing and report it, I just decided to use clang tools instead of gcc.
+
+Demonstration of failure:
+
+    [itchychips@freebsd-computer ~/src]$ ./kerl build 24.1.2
+    Extracting source code
+    Building Erlang/OTP 24.1.2 (24.1.2), please wait...
+    APPLICATIONS INFORMATION (See: /home/itchychips/.kerl/builds/24.1.2/otp_build_24.1.2.log)
+     * wx             : wxWidgets was not compiled with --enable-webview or wxWebView developer package is not installed, wxWebView will NOT be available
+     *         wxWidgets must be installed on your system.
+     *         Please check that wx-config is in path, the directory
+     *         where wxWidgets libraries are installed (returned by
+     *         'wx-config --libs' or 'wx-config --static --libs' command)
+     *         is in LD_LIBRARY_PATH or equivalent variable and
+     *         wxWidgets version is 3.0.2 or above.
+
+    DOCUMENTATION INFORMATION (See: /home/itchychips/.kerl/builds/24.1.2/otp_build_24.1.2.log)
+     * documentation  :
+     *                  fop is missing.
+     *                  Using fakefop to generate placeholder PDF files.
+
+    Build failed.
+    See <https://gcc.gnu.org/bugs/> for instructions.
+    gmake[4]: *** [x86_64-unknown-freebsd12.2/Makefile:910: obj/x86_64-unknown-freebsd12.2/opt/jit/beam_asm.o] Error 4
+    gmake[4]: Leaving directory '/usr/home/itchychips/.kerl/builds/24.1.2/otp_src_24.1.2/erts/emulator'
+    gmake[3]: *** [/home/itchychips/.kerl/builds/24.1.2/otp_src_24.1.2/make/run_make.mk:35: opt] Error 2
+    gmake[3]: Leaving directory '/usr/home/itchychips/.kerl/builds/24.1.2/otp_src_24.1.2/erts/emulator'
+    gmake[2]: *** [Makefile:45: opt] Error 2
+    gmake[2]: Leaving directory '/usr/home/itchychips/.kerl/builds/24.1.2/otp_src_24.1.2/erts'
+    gmake[1]: *** [Makefile:54: jit] Error 2
+    gmake[1]: Leaving directory '/usr/home/itchychips/.kerl/builds/24.1.2/otp_src_24.1.2/erts'
+    gmake: *** [Makefile:483: emulator] Error 2
+
+    Please see /home/itchychips/.kerl/builds/24.1.2/otp_build_24.1.2.log for full details.
+
+And in the build log:
+
+    g++: internal compiler error: Segmentation fault signal terminated program cc1plus
+    Please submit a full bug report,
+    with preprocessed source if appropriate.
+    See <https://gcc.gnu.org/bugs/> for instructions.
+
+Demonstration of success:
+
+    [itchychips@freebsd-computer ~/src]$ CC=clang CXX=clang++ ./kerl build 24.1.2
+    Extracting source code
+    Building Erlang/OTP 24.1.2 (24.1.2), please wait...
+    APPLICATIONS DISABLED (See: /home/itchychips/.kerl/builds/24.1.2/otp_build_24.1.2.log)
+     * odbc           : ODBC library - link check failed
+
+    APPLICATIONS INFORMATION (See: /home/itchychips/.kerl/builds/24.1.2/otp_build_24.1.2.log)
+     * wx             : wxWidgets was not compiled with --enable-webview or wxWebView developer package is not installed, wxWebView will NOT be available
+     *         wxWidgets must be installed on your system.
+     *         Please check that wx-config is in path, the directory
+     *         where wxWidgets libraries are installed (returned by
+     *         'wx-config --libs' or 'wx-config --static --libs' command)
+     *         is in LD_LIBRARY_PATH or equivalent variable and
+     *         wxWidgets version is 3.0.2 or above.
+
+    DOCUMENTATION INFORMATION (See: /home/itchychips/.kerl/builds/24.1.2/otp_build_24.1.2.log)
+     * documentation  :
+     *                  fop is missing.
+     *                  Using fakefop to generate placeholder PDF files.
+
+    Erlang/OTP 24.1.2 (24.1.2) has been successfully built
+
+Not entirely sure what the odbc thing is on about, because it doesn't fail
+every time.
